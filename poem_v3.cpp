@@ -151,7 +151,6 @@ void CreateFile(char data[max_num_str][str_size], char file2_name[OUTFILE], int 
         fputc('\n', file2);
         }
 
-
     fclose(file2);
     }
 
