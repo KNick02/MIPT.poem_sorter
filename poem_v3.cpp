@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #define MAXSTRLEN 60
 #define MAXNUMSTR 30
@@ -197,6 +198,9 @@ void CreateFile(char* str_bgn[MAXNUMSTR], const char Res_name[], const size_t Nu
 
 void Swap(char** ptr1, char** ptr2)
     {
+    assert(ptr1 != NULL);
+    assert(ptr2 != NULL);
+    
     char* help = *ptr1;
     *ptr1 = *ptr2;
     *ptr2 = help;
