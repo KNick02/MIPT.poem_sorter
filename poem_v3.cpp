@@ -1,160 +1,214 @@
 #include <stdio.h>
+#include <string.h>
 
-#define INFILE 8
-#define OUTFILE 9
+#define MAXSTRLEN 60
+#define MAXNUMSTR 30
+#define LETTER 65
 
-const int max_num_str = 20;
-const int str_size = 100;
+#define OPENERR -1
+#define READERR -2
 
-int ReadFile(char rec[max_num_str][str_size], char file_name[INFILE]);
+const size_t Input_size = MAXNUMSTR * MAXSTRLEN;
+const char File_name[] = "poem.txt";
+const char Res_name[] = "sorted_poem.txt";
 
-void DeleteTrash(char data[max_num_str][str_size], int num_strings);
 
-void BubbleSort(char data[max_num_str][str_size], int num_strings);
+//-----------------------------------------------------------------------------
+//! Reads a poem from the txt file and puts it in buffer, saves
+//! pointers to the first and to the last letters of each string in an array
+//!
+//! @param [in]      File_name        name of the poem's file
+//! @param [out]     buf              data buffer
+//! @param [out]     str_bgn          array of pointers to the first letters
+//! @param [out]     str_end          array of pointers to the last letters
+//!
+//! @return  Returns number of strings in the poem if it was successful,
+//! -1 if there was an opening error, -2 if there was a reading error
+//-----------------------------------------------------------------------------
 
-void Swap(char str1[str_size], char str2[str_size]);
 
-int EndString(char data[max_num_str][str_size], int str_number);
+int ReadFile(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], char buf[Input_size], const char File_name[]);
 
-void Copy(char from[str_size], char to[str_size]);
 
-void CreateFile(char data[max_num_str][str_size], char file2_name[OUTFILE], int num_strings);
+
+//-----------------------------------------------------------------------------
+//! Sorts the strings in ascending order of its end code with bubble sort algorithm
+//!
+//! @param [in]      num_str         number of strings in the poem
+//! @param [out]     str_bgn         sorted array of pointers to the first letters
+//! @param [out]     str_end         sorted array of pointers to the last letters
+//-----------------------------------------------------------------------------
+
+
+void BubbleSort(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], size_t num_str);
+
+
+
+//-----------------------------------------------------------------------------
+//! Creates the txt file of strings sorted in ascending order of its end letter
+//!
+//! @param [in]     Res_name         name of the result's file
+//! @param [in]     str_bgn          sorted array of pointers to the first letters
+//! @param [in]     num_str          number of strings in the poem
+//-----------------------------------------------------------------------------
+
+
+void CreateFile(char* str_bgn[MAXNUMSTR], const char Res_name[], const size_t num_str);
+
+
+
+//-----------------------------------------------------------------------------
+//! Makes two pointers to exchange its values
+//-----------------------------------------------------------------------------
+
+
+void Swap(char** ptr1, char** ptr2);
+
+
+
+//-----------------------------------------------------------------------------
+//! Prints a conclusion if the sorting was successful
+//!
+//! @param [in]     num_str          number of read strings or error code
+//-----------------------------------------------------------------------------
+
+
+void ConclPrint(const char Res_name[], const size_t num_str);
+
 
 
 int main()
     {
-    char name[] = "poem.txt";
-    char save[] = "poem2.txt";
+    char* str_bgn[MAXNUMSTR] = {0};
+    char* str_end[MAXNUMSTR] = {0};
+    char buf[Input_size] = {0};
 
-    char data[max_num_str][str_size] = {{0}};
-    int num_strings = 0;
+    const size_t num_str = ReadFile(str_bgn, str_end, buf, File_name);
 
-    num_strings = ReadFile(data, name);
+    BubbleSort(str_bgn, str_end, num_str);
 
-    DeleteTrash(data, num_strings);
+    CreateFile(str_bgn, Res_name, num_str);
 
-    BubbleSort(data, num_strings);
-
-    CreateFile(data, save, num_strings);
+    ConclPrint(Res_name, num_str);
 
     return 0;
     }
 
 
-int ReadFile(char rec[max_num_str][str_size], char file_name[INFILE])
+
+int ReadFile(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], char buf[Input_size], const char File_name[])
     {
-    FILE* file;
-    char c;
+    FILE* file = NULL;
+    size_t check_read = 0;
 
-    int i = 0, j = 0;
-
-    file = fopen(file_name, "r");
-
-    while ((c = fgetc(file)) != EOF)
+    if ((file = fopen(File_name, "r")) == NULL)
         {
-        if (c != '\n')
+        printf("File opening error. There is no file with name '%s'\n", File_name);
+        return OPENERR;
+        }
+
+    check_read = fread(buf, sizeof(char), Input_size, file);
+    if (check_read == 0)
+        {
+        printf("File reading error. The file '%s' is empty\n", File_name);
+        return READERR;
+        }
+
+    else if (check_read == MAXNUMSTR * MAXSTRLEN)
+        {
+        printf("File reading error. The file '%s' is too long\n", File_name);
+        return READERR;
+        }
+
+    str_bgn[0] = &(buf[0]);
+
+    size_t str_ind = 1;
+    size_t buf_ind = 1;
+    size_t trash_ind = 0;
+
+    while (buf[buf_ind] != '\0')
+        {
+        if (buf[buf_ind-1] == '\n')
             {
-            rec[i][j] = c;
-            j++;
+            str_bgn[str_ind] = buf + buf_ind;
+
+            trash_ind = buf_ind-2;
+            if (buf[trash_ind] != '\n')
+                {
+                while (buf[trash_ind] <= LETTER)
+                    trash_ind--;
+                }
+
+            str_end[str_ind-1] = buf + trash_ind;
+            str_ind++;
             }
 
-        else if (j > 0)
-            {
-            rec[i][j] = '\0';
-            i++;
-            j = 0;
-            }
+        buf_ind++;
         }
+
+    trash_ind = buf_ind-1;
+    while (buf[trash_ind] <= LETTER)
+        trash_ind--;
+
+    str_end[str_ind-1] = buf + trash_ind;
 
     fclose(file);
 
-    return (i+1);
+    return str_ind;
     }
 
 
-void DeleteTrash(char data[max_num_str][str_size], int num_strings)
-    {
-    int str, sym;
 
-    for (str = 0; str < num_strings; str++)
+void BubbleSort(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], const size_t num_str)
+    {
+    for (size_t k = 0; k < num_str-1; k++)
         {
-        sym = EndString(data, str);
-
-        if ((data[str][sym]) < 65)
-            data[str][sym] = '\0';
-        }
-    }
-
-
-int EndString(char data[max_num_str][str_size], int str_number)
-    {
-    int i = 0;
-
-    while (data[str_number][i] != '\0')
-        i++;
-
-    return (i-1);
-    }
-
-
-
-void BubbleSort(char data[max_num_str][str_size], int num_strings)
-    {
-    int k, i;
-
-    for (k = 0; k < num_strings-1; k++)
-        {
-        for (i = 0; i < num_strings-1; i++)
+        for (size_t i = 0; i < num_str-1; i++)
             {
-            if (data[i][EndString(data,i)] < data[i+1][EndString(data,i+1)])
-                Swap(data[i], data[i+1]);
+            if (*str_end[i] > *str_end[i+1])
+                {
+                Swap(&str_end[i], &str_end[i+1]);
+                Swap(&str_bgn[i], &str_bgn[i+1]);
+                }
             }
         }
     }
 
 
-void Swap(char str1[str_size], char str2[str_size])
+
+void CreateFile(char* str_bgn[MAXNUMSTR], const char Res_name[], const size_t num_str)
     {
-    char help[str_size];
+    FILE* file;
 
-    Copy(str1, help);
-    Copy(str2, str1);
-    Copy(help, str2);
-    }
+    file = fopen(Res_name, "w");
 
-
-
-
-void Copy(char from[str_size], char to[str_size])
-    {
-    int i;
-
-    for (i = 0; from[i] != '\0'; i++)
-        to[i] = from[i];
-
-    to[i] = '\0';
-    }
-
-
-
-void CreateFile(char data[max_num_str][str_size], char file2_name[OUTFILE], int num_strings)
-    {
-    FILE* file2;
-
-    int i, j = 0;
-
-    file2 = fopen(file2_name, "w");
-
-    for (i = 0; i < num_strings; i++)
+    for (size_t str = 0; str < num_str; str++)
         {
-        fputs(data[i], file2);
-        fputc('\n', file2);
+        for (char* check = str_bgn[str]; *check != '\n'; check++)
+            fputc(*check, file);
+
+        fputc('\n', file);
         }
 
-    fclose(file2);
+    fclose(file);
     }
 
 
+
+void Swap(char** ptr1, char** ptr2)
+    {
+    char* help = *ptr1;
+    *ptr1 = *ptr2;
+    *ptr2 = help;
+    }
+
+
+
+void ConclPrint(const char Res_name[], const size_t num_str)
+    {
+    if (num_str > 0)
+        printf("Sorting was done successfully. Check the file '%s' in the program's directory.\n", Res_name);
+    }
 
 
 
