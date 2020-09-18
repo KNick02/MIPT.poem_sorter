@@ -34,13 +34,13 @@ int ReadFile(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], char buf[Input_
 //-----------------------------------------------------------------------------
 //! Sorts the strings in ascending order of its end code with bubble sort algorithm
 //!
-//! @param [in]      num_str         number of strings in the poem
+//! @param [in]      Num_str         number of strings in the poem
 //! @param [out]     str_bgn         sorted array of pointers to the first letters
 //! @param [out]     str_end         sorted array of pointers to the last letters
 //-----------------------------------------------------------------------------
 
 
-void BubbleSort(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], size_t num_str);
+void BubbleSort(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], size_t Num_str);
 
 
 
@@ -49,11 +49,11 @@ void BubbleSort(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], size_t num_s
 //!
 //! @param [in]     Res_name         name of the result's file
 //! @param [in]     str_bgn          sorted array of pointers to the first letters
-//! @param [in]     num_str          number of strings in the poem
+//! @param [in]     Num_str          number of strings in the poem
 //-----------------------------------------------------------------------------
 
 
-void CreateFile(char* str_bgn[MAXNUMSTR], const char Res_name[], const size_t num_str);
+void CreateFile(char* str_bgn[MAXNUMSTR], const char Res_name[], const size_t Num_str);
 
 
 
@@ -69,11 +69,11 @@ void Swap(char** ptr1, char** ptr2);
 //-----------------------------------------------------------------------------
 //! Prints a conclusion if the sorting was successful
 //!
-//! @param [in]     num_str          number of read strings or error code
+//! @param [in]     Num_str          number of read strings or error code
 //-----------------------------------------------------------------------------
 
 
-void ConclPrint(const char Res_name[], const size_t num_str);
+void ConclPrint(const char Res_name[], const size_t Num_str);
 
 
 
@@ -83,13 +83,13 @@ int main()
     char* str_end[MAXNUMSTR] = {0};
     char buf[Input_size] = {0};
 
-    const size_t num_str = ReadFile(str_bgn, str_end, buf, File_name);
+    const size_t Num_str = ReadFile(str_bgn, str_end, buf, File_name);
 
-    BubbleSort(str_bgn, str_end, num_str);
+    BubbleSort(str_bgn, str_end, Num_str);
 
-    CreateFile(str_bgn, Res_name, num_str);
+    CreateFile(str_bgn, Res_name, Num_str);
 
-    ConclPrint(Res_name, num_str);
+    ConclPrint(Res_name, Num_str);
 
     return 0;
     }
@@ -159,11 +159,11 @@ int ReadFile(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], char buf[Input_
 
 
 
-void BubbleSort(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], const size_t num_str)
+void BubbleSort(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], const size_t Num_str)
     {
-    for (size_t k = 0; k < num_str-1; k++)
+    for (size_t k = 0; k < Num_str-1; k++)
         {
-        for (size_t i = 0; i < num_str-1; i++)
+        for (size_t i = 0; i < Num_str-1; i++)
             {
             if (*str_end[i] > *str_end[i+1])
                 {
@@ -176,13 +176,13 @@ void BubbleSort(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], const size_t
 
 
 
-void CreateFile(char* str_bgn[MAXNUMSTR], const char Res_name[], const size_t num_str)
+void CreateFile(char* str_bgn[MAXNUMSTR], const char Res_name[], const size_t Num_str)
     {
     FILE* file;
 
     file = fopen(Res_name, "w");
 
-    for (size_t str = 0; str < num_str; str++)
+    for (size_t str = 0; str < Num_str; str++)
         {
         for (char* check = str_bgn[str]; *check != '\n'; check++)
             fputc(*check, file);
@@ -204,11 +204,10 @@ void Swap(char** ptr1, char** ptr2)
 
 
 
-void ConclPrint(const char Res_name[], const size_t num_str)
+void ConclPrint(const char Res_name[], const size_t Num_str)
     {
-    if (num_str > 0)
+    if (Num_str > 0)
         printf("Sorting was done successfully. Check the file '%s' in the program's directory.\n", Res_name);
     }
-
 
 
