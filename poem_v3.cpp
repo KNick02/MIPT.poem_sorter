@@ -33,6 +33,41 @@ int ReadFile(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], char buf[Input_
 
 
 //-----------------------------------------------------------------------------
+//! This is a subfunction of ReadFile that saves
+//! pointers to the first and to the last letters of each (except the last)
+//! string in an array
+//!
+//! @param [in]     str_bgn          array of pointers to the first letters
+//! @param [in]     str_end          array of pointers to the last letters
+//! @param [in]     buf              data buffer
+//! @param [out]    buf_ind          index of '\0' symbol in buffer
+//! @param [out]    str_ind          number of the last string
+//!
+//! @return  Returns number of strings in the poem
+//-----------------------------------------------------------------------------
+
+
+size_t ProcFile(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], char buf[Input_size]);
+
+
+
+//-----------------------------------------------------------------------------
+//! This is a subfunction of ProcFile that processes last string by adding
+//! '\n' symbol to the end and saves previous symbol to the array
+//!
+//! @param [in]     str_bgn          array of pointers to the first letters
+//! @param [in]     str_end          array of pointers to the last letters
+//! @param [in]     buf              data buffer
+//!
+//! @return  Returns number of strings in the poem
+//-----------------------------------------------------------------------------
+
+
+size_t LastString(char buf[Input_size], char* str_end[MAXNUMSTR], size_t buf_ind, size_t str_ind);
+
+
+
+//-----------------------------------------------------------------------------
 //! Sorts the strings in ascending order of its end code with bubble sort algorithm
 //!
 //! @param [in]      Num_str         number of strings in the poem
@@ -41,7 +76,7 @@ int ReadFile(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], char buf[Input_
 //-----------------------------------------------------------------------------
 
 
-void BubbleSort(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], const size_t Num_str);
+void BubbleSort(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], size_t Num_str);
 
 
 
@@ -96,7 +131,6 @@ int main()
     }
 
 
-
 int ReadFile(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], char buf[Input_size], const char File_name[])
     {
     FILE* file = NULL;
@@ -121,6 +155,17 @@ int ReadFile(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], char buf[Input_
         return READERR;
         }
 
+    fclose(file);
+
+    size_t num_str = ProcFile(str_bgn, str_end, buf);
+
+    return num_str;
+    }
+
+
+
+size_t ProcFile(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], char buf[Input_size])
+    {
     str_bgn[0] = &(buf[0]);
 
     size_t str_ind = 1;
@@ -147,13 +192,26 @@ int ReadFile(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], char buf[Input_
         buf_ind++;
         }
 
-    trash_ind = buf_ind-1;
+    size_t num_str = LastString(buf, str_end, buf_ind, str_ind);
+
+    return num_str;
+    }
+
+
+
+size_t LastString(char buf[Input_size], char* str_end[MAXNUMSTR], size_t buf_ind, size_t str_ind)
+    {
+    if (buf[buf_ind-1] != '\n')
+        {
+        buf[buf_ind] = '\n';
+        buf[buf_ind+1] = '\0';
+        }
+
+    size_t trash_ind = buf_ind-1;
     while (buf[trash_ind] <= LETTER)
         trash_ind--;
 
     str_end[str_ind-1] = buf + trash_ind;
-
-    fclose(file);
 
     return str_ind;
     }
@@ -170,6 +228,19 @@ void BubbleSort(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], const size_t
                 {
                 Swap(&str_end[i], &str_end[i+1]);
                 Swap(&str_bgn[i], &str_bgn[i+1]);
+                }
+
+            else if (*str_end[i] == *str_end[i+1])
+                {
+                size_t cnd = 1;
+                while (*(str_end[i] - cnd) == *(str_end[i+1] - cnd))
+                    cnd++;
+
+                if (*(str_end[i] - cnd) > *(str_end[i+1] - cnd))
+                    {
+                    Swap(&str_end[i], &str_end[i+1]);
+                    Swap(&str_bgn[i], &str_bgn[i+1]);
+                    }
                 }
             }
         }
@@ -200,7 +271,7 @@ void Swap(char** ptr1, char** ptr2)
     {
     assert(ptr1 != NULL);
     assert(ptr2 != NULL);
-    
+
     char* help = *ptr1;
     *ptr1 = *ptr2;
     *ptr2 = help;
@@ -213,5 +284,3 @@ void ConclPrint(const char Res_name[], const size_t Num_str)
     if (Num_str > 0)
         printf("Sorting was done successfully. Check the file '%s' in the program's directory.\n", Res_name);
     }
-
-
