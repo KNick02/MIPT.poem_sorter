@@ -131,6 +131,7 @@ int main()
     }
 
 
+
 int ReadFile(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], char buf[Input_size], const char File_name[])
     {
     FILE* file = NULL;
