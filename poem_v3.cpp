@@ -6,6 +6,8 @@
 
 #define MAXSTRLEN 60
 #define MAXNUMSTR 30
+#define NEWFILE 0
+#define ADDFILE 1
 #define SEPARATE "-------------------------------------------------\n"
 
 
@@ -134,11 +136,11 @@ int main()
 
     BgnBubbleSort(poem.bgn, poem.end, Num_str);
 
-    CreateFile(poem.bgn, Res_name, Num_str, 0);
+    CreateFile(poem.bgn, Res_name, Num_str, NEWFILE);
 
     EndBubbleSort(poem.bgn, poem.end, Num_str);
 
-    CreateFile(poem.bgn, Res_name, Num_str, 1);
+    CreateFile(poem.bgn, Res_name, Num_str, ADDFILE);
 
     FinalPrint(Res_name, Num_str);
 
