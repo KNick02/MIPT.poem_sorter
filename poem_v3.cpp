@@ -41,6 +41,7 @@ int ReadFile(char* str_bgn[MAXNUMSTR], char* str_end[MAXNUMSTR], char buf[Input_
 //! @param [in]     buf              data buffer
 //! @param [out]    str_bgn          array of pointers to the first letters
 //! @param [out]    str_end          array of pointers to the last letters
+//!
 //! @return  Returns number of strings in the poem
 //-----------------------------------------------------------------------------
 
