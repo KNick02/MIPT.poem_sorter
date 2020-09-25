@@ -4,8 +4,8 @@
 #include <io.h>
 #include <stdlib.h>
 
-#define MAXSTRLEN 60
-#define MAXNUMSTR 30
+#define MAXSTRLEN 100
+#define MAXNUMSTR 50
 #define NEWFILE 0
 #define ADDFILE 1
 #define SEPARATE "-------------------------------------------------\n"
