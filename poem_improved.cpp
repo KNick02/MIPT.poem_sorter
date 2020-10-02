@@ -29,7 +29,7 @@ struct strings
     {
     char* bgn[MAXNUMSTR];//! pointers to the beginning of strings
     char* end[MAXNUMSTR];//! pointers to the ending of strings
-    char* ptr;           //! pointer to the buffer
+    char* buf;           //! pointer to the buffer
     };
 
 
@@ -148,7 +148,7 @@ int main()
     struct strings data = {{0}, {0}, NULL};
     struct strings* poem = &data;
 
-    poem->ptr = (char*)calloc(Input_size, sizeof(char));
+    poem->buf = (char*)calloc(Input_size, sizeof(char));
     char File_name[MAXNAMELEN] = {0};
 
     GetName(File_name);
@@ -165,7 +165,7 @@ int main()
 
     FinalPrint(Res_name, Num_str);
 
-    free(poem->ptr);
+    free(poem->buf);
     return 0;
     }
 
@@ -193,7 +193,7 @@ void GetName(char file_name[MAXNAMELEN])
 
 int ReadFile(struct strings* poem, const char File_name[])
     {
-    if (access(File_name, 3) == -1)
+    if (access(File_name, 3))
         {
         printf("Reading error: file '%s' reading access denied\n", File_name);
         exit(EACCES);
@@ -202,7 +202,7 @@ int ReadFile(struct strings* poem, const char File_name[])
     FILE* file = NULL;
     file = fopen(File_name, "r");
 
-    size_t num_char = fread(poem->ptr, sizeof(char), Input_size, file);
+    size_t num_char = fread(poem->buf, sizeof(char), Input_size, file);
 
     if (num_char == 0)
         {
@@ -229,32 +229,32 @@ size_t FindStrings(struct strings* poem, size_t num_char)
     {
     // delete all spaces at the end of file
     size_t find_ltr = num_char-1;
-    while (isspace(poem->ptr[find_ltr]) != 0)
+    while (isspace(poem->buf[find_ltr]) != 0)
         find_ltr--;
 
-    poem->ptr[find_ltr+1] = '\n';
-    poem->ptr[find_ltr+2] = '\0';
+    poem->buf[find_ltr+1] = '\n';
+    poem->buf[find_ltr+2] = '\0';
 
-    poem->bgn[0] = &(poem->ptr[0]);
+    poem->bgn[0] = &(poem->buf[0]);
 
     size_t str_ind = 1;
     size_t buf_ind = 1;
 
-    while (poem->ptr[buf_ind] != '\0')
+    while (poem->buf[buf_ind] != '\0')
         {
-        if (poem->ptr[buf_ind-1] == '\n')
+        if (poem->buf[buf_ind-1] == '\n')
             {
-            poem->bgn[str_ind] = poem->ptr + buf_ind;
+            poem->bgn[str_ind] = poem->buf + buf_ind;
 
             // skip punctuation
             find_ltr = buf_ind-2;
-            if (poem->ptr[find_ltr] != '\n')
+            if (poem->buf[find_ltr] != '\n')
                 {
-                while (isalpha(poem->ptr[find_ltr]) == 0)
+                while (isalpha(poem->buf[find_ltr]) == 0)
                     find_ltr--;
                 }
 
-            poem->end[str_ind-1] = poem->ptr + find_ltr;
+            poem->end[str_ind-1] = poem->buf + find_ltr;
             str_ind++;
             }
 
@@ -263,10 +263,10 @@ size_t FindStrings(struct strings* poem, size_t num_char)
 
     // skip punctuation
     find_ltr = buf_ind-1;
-    while (isalpha(poem->ptr[find_ltr]) == 0)
+    while (isalpha(poem->buf[find_ltr]) == 0)
         find_ltr--;
 
-    poem->end[str_ind-1] = poem->ptr + find_ltr;
+    poem->end[str_ind-1] = poem->buf + find_ltr;
 
     return str_ind;
     }
