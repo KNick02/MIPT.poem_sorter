@@ -117,7 +117,7 @@ void EndBubbleSort(struct strings* poem, size_t Num_str);
 //-----------------------------------------------------------------------------
 
 
-void CreateFile(struct strings* poem, const char Res_name[], const size_t Num_str, bool add);
+void EditFile(struct strings* poem, const char Res_name[], const size_t Num_str, bool add);
 
 
 
@@ -157,11 +157,11 @@ int main()
 
     BgnBubbleSort(poem, Num_str);
 
-    CreateFile(poem, Res_name, Num_str, NEWFILE);
+    EditFile(poem, Res_name, Num_str, NEWFILE);
 
     EndBubbleSort(poem, Num_str);
 
-    CreateFile(poem, Res_name, Num_str, ADDFILE);
+    EditFile(poem, Res_name, Num_str, ADDFILE);
 
     FinalPrint(Res_name, Num_str);
 
@@ -335,7 +335,7 @@ void BgnBubbleSort(struct strings* poem, const size_t Num_str)
 
 
 
-void CreateFile(struct strings* poem, const char Res_name[], const size_t Num_str, bool add)
+void EditFile(struct strings* poem, const char Res_name[], const size_t Num_str, bool add)
     {
     if (access (Res_name, 2) == -1)
         {
