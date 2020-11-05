@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <io.h>
@@ -11,13 +12,11 @@
 #define NEWFILE 0
 #define ADDFILE 1
 
-
 const char Res_name[] = "sorted_poem.txt";
 
 
 //-----------------------------------------------------------------------------
-//! Contains a pointer to the buffer of read characters and arrays of pointers
-//! to the first and last letters of each string
+//! Contains pointers to the first and to the last letter of string
 //-----------------------------------------------------------------------------
 
 
@@ -25,6 +24,7 @@ struct String
     {
     char* bgn;      //! pointer to the beginning of string
     char* end;      //! pointer to the ending of string
+    char* nsym;     //! pointer to the '\n' symbol at the end of string
     };
 
 
@@ -41,39 +41,53 @@ void IntroPrint(char file_name[MAXNAMELEN]);
 
 
 //-----------------------------------------------------------------------------
-//! Reads a poem from the txt file and puts it in buffer, saves
-//! pointers to the first and to the last letters of each string in an array
+//! Reads a poem from the txt file, counts the number of symbols inside
+//! and puts it in buffer
 //!
 //! @param [in]      File_name        name of the poem's file
-//! @param [out]     strings poem     poem's data structure
+//! @param [out]     len              number of symbols in the file
 //!
-//! @return Returns number of strings in the poem if it was successful
+//! @return Returns pointer to the buffer
 //-----------------------------------------------------------------------------
 
 
 char* ReadFile(size_t* len, const char File_name[]);
 
-void DeleteSpaces(char* buf, size_t len);
+
 
 //-----------------------------------------------------------------------------
-//! This is a subfunction of ReadFile that saves
-//! pointers to the first and to the last letters of each string in an array
+//! Deletes all extra symbols (space, tab, enter) from the end of buffer
 //!
-//! @param [out]     strings poem poem's data structure
+//! @param [in]      buf              pointer to the buffer
+//! @param [in]      len              number of symbols in the file
+//-----------------------------------------------------------------------------
+
+
+void DeleteSpaces(char* buf, size_t len);
+
+
+
+//-----------------------------------------------------------------------------
+//! Counts number of strings in the file, saves pointers to the first and to
+//! the last letters of each string to the structure
 //!
-//! @return Returns number of strings in the poem
+//! @param [in]      buf              pointer to the buffer
+//! @param [out]     num_str          number of strings
+//!
+//! @return Returns pointer to an array of structures
 //-----------------------------------------------------------------------------
 
 
 struct String* FindStrings(char* buf, size_t* num_str);
 
 
+
 //-----------------------------------------------------------------------------
 //! Sorts the strings in ascending order of its first letter's code with bubble
 //! sort algorithm
 //!
-//! @param [in]     Num_str         number of strings in the poem
-//! @param [in]     strings poem    poem's data structure
+//! @param [in]     strings           pointer to an array of structures
+//! @param [in]     num_str           number of strings
 //-----------------------------------------------------------------------------
 
 
@@ -82,11 +96,11 @@ void SortByBgn(struct String* strings, size_t num_str);
 
 
 //-----------------------------------------------------------------------------
-//! Sorts the strings in ascending order of its last letter's code with bubble
+//! Sorts the strings in descending order of its last letter's code with bubble
 //! sort algorithm
 //!
-//! @param [in]     Num_str         number of strings in the poem
-//! @param [in]     strings poem    poem's data structure
+//! @param [in]     strings           pointer to an array of structures
+//! @param [in]     num_str           number of strings
 //-----------------------------------------------------------------------------
 
 
@@ -97,11 +111,11 @@ void SortByEnd(struct String* strings, size_t num_str);
 //-----------------------------------------------------------------------------
 //! Creates the txt file of sorted strings or adds it to the end of existing file
 //!
-//! @param [in]     Res_name         name of the result's file
-//! @param [in]     strings poem     poem's data structure
-//! @param [in]     Num_str          number of strings in the poem
-//! @param [in]     add              0 if it has to create new file and 1 if it
-//!                                  has to add text to the existing file
+//! @param [in]     strings           pointer to an array of structures
+//! @param [in]     Res_name          name of the result's file
+//! @param [in]     num_str           number of strings
+//! @param [in]     add               0 if it has to create new file and 1 if it
+//!                                   has to add text to the existing file
 //-----------------------------------------------------------------------------
 
 
@@ -110,7 +124,7 @@ size_t CreateFile(struct String* strings, const char Res_name[], size_t num_str,
 
 
 //-----------------------------------------------------------------------------
-//! Makes two pointers to exchange its values
+//! Makes two strings to exchange their pointers
 //-----------------------------------------------------------------------------
 
 
@@ -119,8 +133,6 @@ void Swap(struct String* str1, struct String* str2);
 
 int main()
     {
-    setlocale(LC_ALL, "Rus");
-
     char file_name[MAXNAMELEN] = "";
     size_t len = 0;
     size_t num_str = 0;
@@ -190,7 +202,7 @@ char* ReadFile(size_t* len, const char File_name[])
     size_t num_char = ftell(file) + 1;
     fseek(file, 0, SEEK_SET);
 
-    char* buf = (char*)calloc(num_char + 1, sizeof(char));
+    char* buf = (char*)calloc(num_char + 2, sizeof(char));
     fread(buf, sizeof(char), num_char, file);
 
     fclose(file);
@@ -228,17 +240,15 @@ struct String* FindStrings(char* buf, size_t* num_str)
 
     while (buf[buf_ind] != '\0')
         {
-        if (buf[buf_ind-1] == '\n')
+        if ((buf[buf_ind-1] == '\n') && (buf[buf_ind-2] != '\n'))
             {
             strings[str_ind].bgn = buf + buf_ind;
+            strings[str_ind-1].nsym = buf + buf_ind-1;
 
             // skip punctuation
             letter = buf_ind-2;
-            if (buf[letter] != '\n')
-                {
-                while (!isalpha(buf[letter]))
-                    letter--;
-                }
+            while (!isalpha(buf[letter]))
+                letter--;
 
             strings[str_ind-1].end = buf + letter;
             str_ind++;
@@ -247,6 +257,7 @@ struct String* FindStrings(char* buf, size_t* num_str)
         buf_ind++;
         }
 
+    strings[str_ind-1].nsym = buf + buf_ind-1;
     // skip punctuation
     letter = buf_ind-1;
     while (!isalpha(buf[letter]))
@@ -325,11 +336,11 @@ size_t CreateFile(struct String* strings, const char Res_name[], size_t num_str,
         file = fopen(Res_name, "a");
 
     fputs(SEPARATE, file);
-
+    printf("Creating started\n");
     for (size_t str = 0; str < num_str; str++)
         {
-        fwrite(strings[str].bgn, sizeof(char), strings[str].end - strings[str].bgn + 1, file);
-        fputc('\n', file);
+        printf("bgn %d, nsym %d\n", strings[str].bgn, strings[str].nsym);
+        fwrite(strings[str].bgn, sizeof(char), strings[str].nsym - strings[str].bgn + 1, file);
         }
 
     fclose(file);
@@ -340,6 +351,9 @@ size_t CreateFile(struct String* strings, const char Res_name[], size_t num_str,
 
 void Swap(struct String* str1, struct String* str2)
     {
+    assert(str1->bgn);
+    assert(str2->bgn);
+
     char* help = str1->bgn;
     str1->bgn = str2->bgn;
     str2->bgn = help;
@@ -348,4 +362,3 @@ void Swap(struct String* str1, struct String* str2)
     str1->end = str2->end;
     str2->end = help;
     }
-
