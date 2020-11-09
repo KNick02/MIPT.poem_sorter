@@ -24,7 +24,7 @@ struct String
 {
     char* bgn;      //! pointer to the beginning of string
     char* end_ltr;  //! pointer to the last letter of string
-	char* nsym;     //! pointer to the '\n' symbol at the end of string
+    char* nsym;     //! pointer to the '\n' symbol at the end of string
 };
 
 
@@ -278,7 +278,7 @@ struct String* FindStrings(char* buf, size_t* num_str)
 
 void SortByBgn(struct String* strings, size_t num_str)
 {
-	size_t k = 0, i = 0;
+    size_t k = 0, i = 0;
     for (size_t k = 0; k < num_str-1; k++)
     {
         for (size_t i = 0; i < num_str-1; i++)
@@ -304,7 +304,7 @@ void SortByBgn(struct String* strings, size_t num_str)
 
 void SortByEnd(struct String* strings, size_t num_str)
 {
-	size_t k = 0, i = 0;
+    size_t k = 0, i = 0;
     for (size_t k = 0; k < num_str-1; k++)
     {
         for (size_t i = 0; i < num_str-1; i++)
@@ -365,7 +365,7 @@ void Swap(struct String* str1, struct String* str2)
     str1->end_ltr = str2->end_ltr;
     str2->end_ltr = help;
 
-	help = str1->nsym;
-	str1->nsym = str2->nsym;
-	str2->nsym = help;
+    help = str1->nsym;
+    str1->nsym = str2->nsym;
+    str2->nsym = help;
 }
