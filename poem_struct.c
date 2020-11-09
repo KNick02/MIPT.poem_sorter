@@ -3,7 +3,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <locale.h>
 #include <errno.h>
 
 #define MAXNAMELEN 20
