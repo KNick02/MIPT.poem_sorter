@@ -1,8 +1,10 @@
+#include <assert.h>
 #include <stdio.h>
-#include <ctype.h>
-#include <unistd.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <string.h>
+#include <unistd.h>
+#include <locale.h>
 #include <errno.h>
 
 #define MAXNAMELEN 20
@@ -22,7 +24,7 @@ struct String
 {
     char* bgn;      //! pointer to the beginning of string
     char* end_ltr;  //! pointer to the last letter of string
-    char* nsym;     //! pointer to the '\n' symbol at the end of string
+	char* nsym;     //! pointer to the '\n' symbol at the end of string
 };
 
 
@@ -139,6 +141,8 @@ int main()
     size_t len = 0;
     size_t num_str = 0;
 
+	setlocale(LC_ALL, "Rus");
+
     IntroPrint(file_name);
 
     char* buf = ReadFile(&len, file_name);
@@ -190,6 +194,7 @@ void IntroPrint(char file_name[MAXNAMELEN])
 }
 
 
+
 char* ReadFile(size_t* len, const char File_name[])
 {
     if (access(File_name, 3) == -1)
@@ -215,6 +220,7 @@ char* ReadFile(size_t* len, const char File_name[])
 }
 
 
+
 void DeleteSpaces(char* buf, size_t len)
 {
     size_t end_ltr = len - 2;
@@ -225,6 +231,7 @@ void DeleteSpaces(char* buf, size_t len)
     buf[end_ltr+1] = '\n';
     buf[end_ltr+2] = '\0';
 }
+
 
 
 struct String* FindStrings(char* buf, size_t* num_str)
@@ -276,7 +283,7 @@ struct String* FindStrings(char* buf, size_t* num_str)
 
 void SortByBgn(struct String* strings, size_t num_str)
 {
-    size_t k = 0, i = 0;
+	size_t k = 0, i = 0;
     for (size_t k = 0; k < num_str-1; k++)
     {
         for (size_t i = 0; i < num_str-1; i++)
@@ -302,7 +309,7 @@ void SortByBgn(struct String* strings, size_t num_str)
 
 void SortByEnd(struct String* strings, size_t num_str)
 {
-    size_t k = 0, i = 0;
+	size_t k = 0, i = 0;
     for (size_t k = 0; k < num_str-1; k++)
     {
         for (size_t i = 0; i < num_str-1; i++)
@@ -355,6 +362,13 @@ size_t CreateFile(struct String* strings, const char Res_name[], size_t num_str,
 
 void Swap(struct String* str1, struct String* str2)
 {
+	assert(str1->bgn);
+	assert(str2->bgn);
+	assert(str1->end_ltr);
+	assert(str2->end_ltr);
+	assert(str1->nsym);
+	assert(str2->nsym);
+			
     char* help = str1->bgn;
     str1->bgn = str2->bgn;
     str2->bgn = help;
@@ -363,7 +377,7 @@ void Swap(struct String* str1, struct String* str2)
     str1->end_ltr = str2->end_ltr;
     str2->end_ltr = help;
 
-    help = str1->nsym;
-    str1->nsym = str2->nsym;
-    str2->nsym = help;
+	help = str1->nsym;
+	str1->nsym = str2->nsym;
+	str2->nsym = help;
 }
