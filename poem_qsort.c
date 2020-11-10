@@ -1,10 +1,8 @@
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 #include <unistd.h>
-#include <locale.h>
 #include <errno.h>
 
 #define MAXNAMELEN 20
