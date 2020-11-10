@@ -55,7 +55,7 @@ char* ReadFile(size_t* len, const char File_name[]);
 
 
 //-----------------------------------------------------------------------------
-//! Deletes all extra symbols (space, tab, enter) from the end_ltr of buffer
+//! Deletes all extra symbols (space, tab, enter) from the end of buffer
 //!
 //! @param [in]      buf              pointer to the buffer
 //! @param [in]      len              number of symbols in the file
