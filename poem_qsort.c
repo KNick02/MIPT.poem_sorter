@@ -24,7 +24,7 @@ struct String
 {
     char* bgn;      //! pointer to the beginning of string
     char* end_ltr;  //! pointer to the last letter of string
-	char* nsym;     //! pointer to the '\n' symbol at the end of string
+    char* nsym;     //! pointer to the '\n' symbol at the end of string
 };
 
 
@@ -141,8 +141,6 @@ int main()
     char file_name[MAXNAMELEN] = "";
     size_t len = 0;
     size_t num_str = 0;
-
-	setlocale(LC_ALL, "Rus");
 
     IntroPrint(file_name);
 
@@ -299,7 +297,7 @@ size_t CreateFile(struct String* strings, const char Res_name[], size_t num_str,
 
     fputs(SEPARATE, file);
 	
-	size_t str = 0;
+    size_t str = 0;
     for (str = 0; str < num_str; str++)
         fwrite(strings[str].bgn, sizeof(char), strings[str].nsym - strings[str].bgn + 1, file);
 
@@ -326,7 +324,6 @@ int comp_end(const struct String* str1, const struct String* str2)
         i++;
 
     return (*(str1->end_ltr - i) - *(str2->end_ltr - i));
-
 }
 
 
